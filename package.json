@@ -1,0 +1,17 @@
+{
+  "name"         : "Superkokkeneskokebok",
+  "version"      : "0.0.0",
+  "description"  : "Superkokkeneskokebok, mat, mat og mat.",
+  "main"         : "server.js",
+  "scripts"      :  {
+    "start":     "node server.js"
+  },
+  "author"       : "Marianne Melhoos",
+  "dependencies" : {
+    "body-parser"    : "^1.4.3",
+    "express"        : "^4.13.4",
+    "method-override": "^2.1.3",
+    "mongoose"       : "^4.4.12",
+    "morgan"         : "^1.1.1"
+  }
+}

@@ -1,0 +1,170 @@
+<!doctype html>
+
+<html ng-app="superkokkeneskokebok">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+    <title>Superkokkeneskokebok</title>
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <link rel="stylesheet" href="style.css"><!-- load style -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- load jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+    <script src="https://use.fontawesome.com/5adacf9784.js"></script> <!-- load fontawesome  -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script> <!-- load bootstrap -->
+    <script src="https://cdn.rawgit.com/alertifyjs/alertify.js/v1.0.10/dist/js/ngAlertify.js"></script> <!-- load alertify -->
+    <script src="index.js"></script>
+
+</head>
+
+<body ng-controller="mainController">
+    <div class="container">
+        <!-- search field -->
+        <div id="search_field">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <form>
+                        <div class="form-group">
+                            <input type="text" class="form-control input-lg" placeholder="Søk" ng-model="search_value">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-sm-2">
+                    <a><i class="fa fa-plus-circle fa-3x" id="add_button" aria-hidden="true" data-toggle="modal" data-target="#addRecipie" ng-click="resetFormData()"></i></a>
+                    <a><i class="fa fa-question-circle fa-3x" id="question_button" aria-hidden="true" data-toggle="modal" data-target="#recipie" ng-click="setRandomRecipieAsActiveRecipie()"></i></a>
+                </div>    
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2">
+                    <div class="form-group">
+                        <span id="meal_filters" ng-click="getAllRecipies()"><i class="fa fa-cutlery" aria-hidden="true"></i> <i class="fa fa-sort" aria-hidden="true"></i></span>
+                        <span id="meal_filters" ng-repeat="meal in meals" ng-click="filterBasedOnMeal(meal)">{{meal}} </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Recipie table  -->
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <table class="table table-borderless table-hover">
+                    <thead>
+
+                    </thead>
+                    <tbody class="list">
+                        <tr ng-repeat="recipie in recipes | orderBy : orderByExpression : orderByReverse | filter:search_value " data-toggle="modal" data-target="#recipie" ng-click="setActiveRecipe(recipie)">
+                            <td colspan="4" id="recipie_row" class="recipie_title">{{recipie.title}}</td>
+                            <td colspan="1" id="recipie_row" class="recipie_meal" align="right"> {{recipie.meal}} </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>    
+
+        
+
+        <!-- Add Recipie Modal -->
+        <div class="modal fade" id="addRecipie">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Ny oppskrift</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <input type="text" class="form-control input-lg text-center" placeholder="Tittel" ng-model="formData.title">
+                            </div>
+
+                            <div class="form-group">
+                                 <input type="text" class="form-control " placeholder="Ingredienser" ng-model="formData.ingredients">
+                            </div>
+                           
+                            <div class="form-group">
+                                <textarea class="form-control" rows="5" placeholder="Fremgangsmåte" ng-model="formData.description"></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <div class="dropdown btn-group" >
+                                            <button class="btn btn-default">{{selectedMeal}}</button>
+                                            <button class="btn btn-default dropdown-toggle" type="button" id="meals_dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" ><span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu"  aria-labelledby="meals_dropdown">
+                                                <li ng-repeat="meal in meals" ng-click="setDropdownButtonText(meal)"><a href="#">{{meal}}</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="URL" ng-model="formData.url">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Avbryt</button>
+                        <button ng-disabled="(!formData.title || !formData.ingredients || !formData.description || !formData.meal)" type="button" class="btn btn-primary" type="submit" ng-click="createRecipie()" data-dismiss="modal">Legg til</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipie Modal -->
+        <div class="modal fade" id="recipie">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-center" id="myModalLabel">{{activeRecipie.title}}</h4>
+                    </div>
+                    <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12" id="recipie_modal_ingredients">
+                        <span id="recipie_ingredients_hearts"> <i class="fa fa-heart" aria-hidden="true"></i> </span>
+                        <span id="recipie_modal_ingredients_font"> {{activeRecipie.ingredients}} </span>
+                        <span id="recipie_ingredients_hearts"> <i class="fa fa-heart" aria-hidden="true"></i> </span>
+
+                        </div>
+                    </div>
+
+                     <div class="row">
+                         <div class="col-sm-12">
+                            <span id="recipie_modal_fremgangsmåte"> Fremgangsmåte: </span>
+                            <span id="recipie_modal_description"> {{activeRecipie.description}} </span>
+                         </div>
+                     </div>
+
+                     <div class="row">
+                         <div class="col-sm-12" id="recipie_modal_url">
+                             {{activeRecipie.url}}
+                         </div>
+                     </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-xs" data-dismiss="modal" ng-click="deleteRecipie(activeRecipie._id)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+    </div>
+
+</body>
+</html>
